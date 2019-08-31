@@ -2,45 +2,43 @@ use postgres::Connection;
 
 pub fn get_anon(conn: &Connection, num: &i64) -> Vec<String> {
     let mut proxies = Vec::new();
-    if let Ok(rows) = &conn
-        .query(
-            "SELECT
+    if let Ok(rows) = &conn.query(
+        "SELECT
                 hostname
             FROM
                 proxies
             WHERE
-                work = true AND anon = true
+                work = true AND anon = true AND random() < 0.01
             LIMIT
                 $1
             ",
-            &[&num],
-        ) {
-    for row in rows {
-        proxies.push(row.get(1));
+        &[&num],
+    ) {
+        for row in rows {
+            proxies.push(row.get(0));
         }
-        }
+    }
     proxies
 }
 
 pub fn get_work(conn: &Connection, num: &i64) -> Vec<String> {
     let mut proxies = Vec::new();
-    if let Ok(rows) = &conn
-        .query(
-            "SELECT
+    if let Ok(rows) = &conn.query(
+        "SELECT
                 hostname
             FROM
                 proxies
             WHERE
-                work = true
+                work = true AND random() < 0.01
             LIMIT
                 $1
             ",
-            &[&num],
-        ) {
-            for row in rows {        
-        proxies.push(row.get(1));
+        &[&num],
+    ) {
+        for row in rows {
+            proxies.push(row.get(0));
         }
-}
+    }
     proxies
 }
 
